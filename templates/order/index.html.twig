@@ -1,0 +1,68 @@
+{% extends 'base.html.twig' %}
+
+
+{% block body %}
+
+    {% set sum = 0 %}
+    
+    <br>
+    <div class="container">
+        <h2>Your order</h2>
+        <br>
+
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <td>Order Nr.</td>
+                    <td>Name</td>
+                    <td>Price</td>
+                    <td>Status</td>
+                    <td></td> 
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for order in orders %}
+                    {% set sum = sum + order.orderprice %}
+                    <tr>
+                        <td>{{order.ordernumber}}</td>
+                        <td>{{order.ordername}}</td>
+                        <td>{{order.orderprice}}</td>
+
+                        {% if not is_granted('IS_AUTHENTICATED_FULLY') %}
+                            <td>{{order.orderstatus}}</td>
+                        {% endif %} 
+
+                        {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+                            <td>
+                                <div class="dropdown">
+                                    <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-expanded="false">{{order.orderstatus}}</a>
+
+                                    <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                                        <a class="dropdown-item" href="{{ path('status', {id: order.id, status: 'open'}) }}">Open</a>
+                                        <a class="dropdown-item" href="{{ path('status', {id: order.id, status: 'ready'}) }}">Ready</a>
+                                        <a class="dropdown-item" href="{{ path('status', {id: order.id, status: 'archive'}) }}">Archive</a>
+                                    </div>
+                                </div>
+                            </td>
+                        {% endif %} 
+
+                            <td>
+                        {% if order.orderstatus == 'open' %} 
+                                <a class="btn btn-outline-danger btn-sm" href="{{ path('delete', {id: order.id}) }}">Remove</a>
+                        {% endif %}                        
+                            </td>   
+                    </tr>
+                {% endfor %}
+
+                <td></td><td></td><td>{{sum}} USD</td><td></td><td></td>
+            </tbody>
+        </table>
+
+    </div>
+{% endblock %}
+
+
+
+
+
